@@ -1,0 +1,17 @@
+pre-commit:
+  parallel: false
+  jobs:
+    - name: lint
+      glob: "*.{ts,tsx,js,jsx}"
+      run: npx eslint {staged_files}
+      stage_fixed: true
+
+    - name: typecheck
+      run: npx tsc -b
+
+    - name: format-check
+      glob: "*.{ts,tsx,js,jsx,json,css,md}"
+      run: npx prettier --check {staged_files}
+
+    - name: test
+      run: npx vitest run

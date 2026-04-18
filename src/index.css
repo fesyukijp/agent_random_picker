@@ -1,0 +1,76 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-bg-primary: #0f1923;
+  --color-bg-surface: #1a2634;
+  --color-bg-elevated: #243447;
+  --color-accent: #ff4655;
+  --color-accent-hover: #e03040;
+  --color-text-primary: #ece8e1;
+  --color-text-secondary: #9ba9b4;
+  --color-text-muted: #7a8f9b;
+  --color-border: #2d4050;
+  --color-border-accent: #ff4655;
+
+  --font-sans: 'Barlow Condensed', sans-serif;
+
+  --radius-sm: 2px;
+  --radius: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+  }
+}
+
+@layer utilities {
+  .hide-scrollbar {
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(-16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes icon-flash {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

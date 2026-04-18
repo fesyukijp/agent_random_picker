@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /agents/
+Sitemap: https://fesyukijp.github.io/agent_random_picker/sitemap.xml
