@@ -63,8 +63,9 @@ function NumberInput({
       onChange={(e) => {
         setDraft(e.target.value)
         if (e.target.value === '') return
-        // Number() は "1e10"・"0x10" 等も受け付けるが、isInteger で弾く。
-        // 科学表記や小数は UI 仕様として非対応。
+        // "1.5"・"abc"・"Infinity" は isInteger=false で弾かれる。
+        // "1e2"=100・"0xff"=255 のような整数値に解釈される表記は通過するが、
+        // 直後の Math.max/min クランプで store へは常に [min, max] の整数のみ渡る。
         const n = Number(e.target.value)
         if (!Number.isInteger(n)) return
         onCommit(Math.max(min, Math.min(max, n)))
