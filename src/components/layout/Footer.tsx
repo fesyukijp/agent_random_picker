@@ -27,7 +27,7 @@ export function Footer() {
             {t('footer.bugReport')}
           </a>
           <a
-            href="https://x.com/fesyukijp"
+            href="https://x.com/randompicker_vl"
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t('footer.twitterAriaLabel')}
