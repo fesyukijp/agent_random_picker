@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type FocusEvent } from 'react'
 import { AGENTS_BY_ROLE, ROLES } from '../../data/agents'
 import type { AgentConstraint, RoleId } from '../../logic/types'
 import { usePlayerStore } from '../../stores/playerStore'
@@ -6,6 +6,73 @@ import { useShallow } from 'zustand/react/shallow'
 import { ChevronIcon } from '../icons/ChevronIcon'
 import { useTranslation } from '../../i18n/useTranslation'
 import type { TranslationKey } from '../../i18n/locales/ja'
+
+/**
+ * ロール人数制限の数値入力。
+ * Issue #2: 空文字中間状態を許容し、フォーカス時に全選択することで
+ * 「既存値を消してから任意の値を入力する」という自然な操作を成立させる。
+ *
+ * - focused 中は draft 文字列を表示（空文字も可）
+ * - onChange で有効な整数なら props の [min, max] にクランプして即 commit
+ * - blur で draft を store の値に戻し、入力途中の不整合表示を消す
+ */
+interface NumberInputProps {
+  readonly value: number
+  readonly min: number
+  readonly max: number
+  readonly onCommit: (value: number) => void
+  readonly id: string
+  readonly 'data-testid': string
+  readonly className?: string
+}
+
+function NumberInput({
+  value,
+  min,
+  max,
+  onCommit,
+  id,
+  'data-testid': testId,
+  className,
+}: NumberInputProps) {
+  const [draft, setDraft] = useState(String(value))
+  const [focused, setFocused] = useState(false)
+
+  const displayValue = focused ? draft : String(value)
+
+  const handleFocus = (e: FocusEvent<HTMLInputElement>) => {
+    setDraft(String(value))
+    setFocused(true)
+    e.target.select()
+  }
+
+  return (
+    <input
+      type="number"
+      id={id}
+      data-testid={testId}
+      value={displayValue}
+      min={min}
+      max={max}
+      step="1"
+      onFocus={handleFocus}
+      onBlur={() => {
+        setDraft(String(value))
+        setFocused(false)
+      }}
+      onChange={(e) => {
+        setDraft(e.target.value)
+        if (e.target.value === '') return
+        // Number() は "1e10"・"0x10" 等も受け付けるが、isInteger で弾く。
+        // 科学表記や小数は UI 仕様として非対応。
+        const n = Number(e.target.value)
+        if (!Number.isInteger(n)) return
+        onCommit(Math.max(min, Math.min(max, n)))
+      }}
+      className={className}
+    />
+  )
+}
 
 // 順序: 除外（ネガティブ）→ 対象（ニュートラル）→ 必須（ポジティブ）
 // label はキー。コンポーネント内で t() で翻訳する。
@@ -151,23 +218,13 @@ function PartySettings({ playerCount }: Props) {
                       >
                         {t('party.min')}
                       </label>
-                      <input
-                        type="number"
+                      <NumberInput
                         id={`role-limit-${role.id}-min`}
                         data-testid={`role-limit-${role.id}-min`}
                         value={limit.min}
                         min={0}
                         max={limit.max}
-                        step="1"
-                        onChange={(e) => {
-                          const v = parseInt(e.target.value, 10)
-                          if (Number.isNaN(v)) return
-                          setRoleLimit(
-                            role.id,
-                            Math.min(v, limit.max),
-                            limit.max,
-                          )
-                        }}
+                        onCommit={(v) => setRoleLimit(role.id, v, limit.max)}
                         className="w-14 border border-border rounded px-2 py-2 text-center bg-bg-elevated text-text-primary focus:outline-none focus:border-accent"
                       />
                       <label
@@ -176,23 +233,13 @@ function PartySettings({ playerCount }: Props) {
                       >
                         {t('party.max')}
                       </label>
-                      <input
-                        type="number"
+                      <NumberInput
                         id={`role-limit-${role.id}-max`}
                         data-testid={`role-limit-${role.id}-max`}
                         value={Math.min(limit.max, playerCount)}
                         min={limit.min}
                         max={playerCount}
-                        step="1"
-                        onChange={(e) => {
-                          const v = parseInt(e.target.value, 10)
-                          if (Number.isNaN(v)) return
-                          setRoleLimit(
-                            role.id,
-                            limit.min,
-                            Math.min(v, playerCount),
-                          )
-                        }}
+                        onCommit={(v) => setRoleLimit(role.id, limit.min, v)}
                         className="w-14 border border-border rounded px-2 py-2 text-center bg-bg-elevated text-text-primary focus:outline-none focus:border-accent"
                       />
                     </div>
