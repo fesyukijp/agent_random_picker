@@ -213,14 +213,12 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col bg-bg-primary">
       <Header />
-      <main
-        className={`max-w-7xl w-full mx-auto px-4 py-6 flex-1${isMobile && isSetup ? ' pb-32' : ''}`}
-      >
+      <main className="max-w-7xl w-full mx-auto px-4 py-6 flex-1">
         {error && (
           <div
             role="alert"
             data-testid="pick-error"
-            className="mb-4 p-3 bg-bg-surface border border-border-accent rounded text-accent text-sm"
+            className="relative z-20 mb-4 p-3 bg-bg-surface border border-border-accent rounded text-accent text-sm"
           >
             {resolveErrorMessage(error, t)}
           </div>
@@ -326,9 +324,10 @@ function App() {
               </>
             )}
 
-            {/* ピックボタン: モバイルは固定フッター、デスクトップは通常フロー */}
+            {/* ピックボタン: モバイルは sticky でスクロール中は下端追従・フッター直上で停止、デスクトップは通常フロー */}
+            {/* -mx-4 は親 <main> の px-4 (line 216) を打ち消して画面端までブリードさせる暗黙契約。main の左右 padding を変える際は一緒に調整すること。 */}
             {isMobile ? (
-              <div className="fixed bottom-0 left-0 right-0 bg-bg-primary border-t border-border px-4 py-3 z-10">
+              <div className="sticky bottom-0 z-10 -mx-4 mt-6 bg-bg-primary border-t border-border px-4 py-3 will-change-transform">
                 <PickButton
                   onClick={handlePick}
                   disabled={isLoading}
