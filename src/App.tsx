@@ -213,9 +213,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col bg-bg-primary">
       <Header />
-      <main
-        className={`max-w-7xl w-full mx-auto px-4 py-6 flex-1${isMobile && isSetup ? ' pb-32' : ''}`}
-      >
+      <main className="max-w-7xl w-full mx-auto px-4 py-6 flex-1">
         {error && (
           <div
             role="alert"
@@ -326,9 +324,9 @@ function App() {
               </>
             )}
 
-            {/* ピックボタン: モバイルは固定フッター、デスクトップは通常フロー */}
+            {/* ピックボタン: モバイルは sticky でスクロール中は下端追従・フッター直上で停止、デスクトップは通常フロー */}
             {isMobile ? (
-              <div className="fixed bottom-0 left-0 right-0 bg-bg-primary border-t border-border px-4 py-3 z-10">
+              <div className="sticky bottom-0 -mx-4 mt-6 bg-bg-primary border-t border-border px-4 py-3 z-10">
                 <PickButton
                   onClick={handlePick}
                   disabled={isLoading}
